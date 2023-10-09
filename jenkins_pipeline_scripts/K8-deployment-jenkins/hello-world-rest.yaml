@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+   name: restapi-pod
+spec:
+   containers:
+   - name: restapi-pod
+     image: vad1mo/hello-world-rest:latest
+     ports:
+     - containerPort: 5050
+     

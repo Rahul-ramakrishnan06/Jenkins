@@ -1,0 +1,32 @@
+https://github.com/Rahul-ramakrishnan06/K8.git
+
+sep7
+
+
+stages{
+        stage("clone"){
+            steps{
+                echo"clonning the git repo in the jenkins server"
+                git branch: 'main', url: 'https://github.com/Rahul-ramakrishnan06/K8.git'
+                
+            }
+        }
+        
+        
+ sshCommand remote:remote, command: "cd /cicd_build/ && rm -rf * || true"
+ 
+ 
+ sshPut remote: remote,from: "sep7",into :'/k8/'
+  
+  
+$ docker build - t dr.xenonstack.com: 5050 / postgres: v9 .6
+
+
+kubectl exec -it postgresdb-5b9bf77c46-6xhx2 -- psql -h localhost -U testUser --password -p 5432 testDB
+POSTGRES_PASSWORD 
+
+kubectl apply -f db-persistent-volume.yaml
+kubectl apply -f db-volume-claim.yaml
+kubectl apply -f db-configmap.yaml
+kubectl apply -f db-deployment.yaml
+

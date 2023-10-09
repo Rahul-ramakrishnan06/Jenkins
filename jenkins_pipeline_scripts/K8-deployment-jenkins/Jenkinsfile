@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+    
+    environment {
+        pass="rahul"
+        hostname="35.153.67.1"
+        repo_folder="sep7"
+    }
+
+    stages {
+        stage("clonning the git repo")
+        {
+            steps{
+                echo"clonning the git repo in the jenkins server"
+                git branch: 'main', url: 'https://github.com/Rahul-ramakrishnan06/K8.git'
+            }
+        }
+
+
+        stage('Copying the file from workspace to k8 server') {
+            steps {
+                script 
+                {
+                    def remote = [:]
+                    withCredentials([string(credentialsId: 'userpassword', variable: 'userpassword'), string(credentialsId: 'username', variable: 'username')]) {
+                    remote.name = 'rahul'
+                    remote.host = "${hostname}"
+                    remote.user = username
+                    remote.password = userpassword
+                    remote.allowAnyHosts = true
+                    sshPut remote: remote,from: "${repo_folder}",into :'k8/'
+                    sshCommand remote:remote, command: "ls k8/"
+                    }
+                }
+            }
+        }
+
+
+        stage('Run Script on Remote Server') {
+            steps {
+                script 
+                {
+                    def remote = [:]
+                    withCredentials([string(credentialsId: 'userpassword', variable: 'userpassword'), string(credentialsId: 'username', variable: 'username')]) {
+                    remote.name = 'rahul'
+                    remote.host = "${hostname}"
+                    remote.user = username
+                    remote.password = userpassword
+                    remote.allowAnyHosts = true
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl get deployments"
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl get svc"
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl delete deployment restapi-pod"
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl delete svc restapi-service"
+                    sshCommand remote:remote, command: "cd k8/${repo_folder} && echo ${pass} | sudo -S kubectl create -f deployment.yaml"
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl get deployments"
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl get svc"
+                    }
+                }
+            }
+        }
+    }
+}
