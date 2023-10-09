@@ -1,0 +1,34 @@
+#Running jenkins in K8
+
+kubectl create namespace devops-tools
+
+kubectl apply -f serviceAccount.yaml
+
+Replace 'worker-node01' with any one of your cluster worker nodes hostname.
+kubectl get nodes
+kubectl create -f volume.yaml
+
+If you don’t want the local storage persistent volume, you can replace the volume definition in the deployment with the host directory as shown below.
+
+volumes:
+- name: jenkins-data
+emptyDir: \{}
+
+
+kubectl apply -f deployment.yaml
+
+kubectl get deployments -n devops-tools
+
+service.yaml
+
+kubectl apply -f service.yaml
+
+
+Logs
+kubectl logs jenkins-deployment-2539456353-j00w5 --namespace=devops-tools
+
+initial password
+
+kubectl exec -it jenkins-bf6b8d5fb-jmcbh cat /var/jenkins_home/secrets/initialAdminPassword -n devops-tools
+
+

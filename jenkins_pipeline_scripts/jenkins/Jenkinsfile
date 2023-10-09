@@ -1,0 +1,64 @@
+pipeline {
+    agent any
+    
+    environment {
+        pass="rahul"
+        hostname="54.90.45.101"
+        repo_folder="sep7"
+    }
+
+    stages {
+        stage("clonning the git repo")
+        {
+            steps{
+                echo"clonning the git repo in the jenkins server"
+                git branch: 'main', url: 'https://github.com/Rahul-ramakrishnan06/K8.git'
+    
+            }
+        }
+
+
+        stage('Copying the file from workspace to k8 server') {
+            steps {
+                script 
+                {
+                    def remote = [:]
+                    withCredentials([string(credentialsId: 'userpassword', variable: 'userpassword'), string(credentialsId: 'username', variable: 'username')]) {
+                    remote.name = 'rahul'
+                    remote.host = "${hostname}"
+                    remote.user = username
+                    remote.password = userpassword
+                    remote.allowAnyHosts = true
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl cp jenkins-bf6b8d5fb-jmcbh:var/jenkins_home/workspace/Kubernetes/ /home/ubuntu/kube/ -n devops-tools"
+                    }
+                }
+            }
+        }
+
+
+        stage('Run Script on Remote Server') {
+            steps {
+                script 
+                {
+                    def remote = [:]
+                    withCredentials([string(credentialsId: 'userpassword', variable: 'userpassword'), string(credentialsId: 'username', variable: 'username')]) {
+                    remote.name = 'rahul'
+                    remote.host = "${hostname}"
+                    remote.user = username
+                    remote.password = userpassword
+                    remote.allowAnyHosts = true
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl get deployments"
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl get svc"
+                    sshCommand remote:remote, command: "cd kube/${repo_folder} && echo ${pass} | sudo -S kubectl apply -f deployment.yaml"
+                    sshCommand remote:remote, command: "cd kube/db/ && echo ${pass} | sudo -S kubectl apply -f db-persistent-volume.yaml"
+                    sshCommand remote:remote, command: "cd kube/db/ && echo ${pass} | sudo -S kubectl apply -f db-volume-claim.yaml"
+                    sshCommand remote:remote, command: "cd kube/db/ && echo ${pass} | sudo -S kubectl apply -f db-configmap.yaml"
+                    sshCommand remote:remote, command: "cd kube/db/ && echo ${pass} | sudo -S kubectl apply -f db-deployment.yaml"
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl get deployments"
+                    sshCommand remote:remote, command: "echo ${pass} | sudo -S kubectl get svc"
+                    }
+                }
+            }
+        }
+    }
+}

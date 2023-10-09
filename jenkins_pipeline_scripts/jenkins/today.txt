@@ -1,0 +1,27 @@
+kubectl cp <source> <destination>
+
+
+kubectl cp jenkins-bf6b8d5fb-jmcbh:/var/jenkins_home/workspace/Kubernetes ~/home/ubuntu/kube
+
+
+kubectl cp <some-namespace>/<some-pod>:/tmp/foo /tmp/bar
+
+
+
+kubectl cp jenkins-bf6b8d5fb-jmcbh:var/jenkins_home/workspace/Kubernetes/ /home/ubuntu/kube/ -n devops-tools
+
+
+"echo ${pass} | sudo -S kubectl cp jenkins-bf6b8d5fb-jmcbh:var/jenkins_home/workspace/Kubernetes/ /home/ubuntu/kube/ -n devops-tools"
+
+
+
+sshCommand remote:remote, command: "cd kube/db/ && echo ${pass} | sudo -S kubectl apply -f db-persistent-volume.yaml"
+sshCommand remote:remote, command: "cd kube/db/ && echo ${pass} | sudo -S kubectl apply -f db-volume-claim.yaml"
+sshCommand remote:remote, command: "cd kube/db/ && echo ${pass} | sudo -S kubectl apply -f db-configmap.yaml"
+sshCommand remote:remote, command: "cd kube/db/ && echo ${pass} | sudo -S kubectl apply -f db-deployment.yaml"
+
+
+kubectl apply -f db-persistent-volume.yaml
+kubectl apply -f db-volume-claim.yaml
+kubectl apply -f db-configmap.yaml
+kubectl apply -f db-deployment.yaml
